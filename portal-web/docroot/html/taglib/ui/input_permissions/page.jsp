@@ -32,6 +32,16 @@ if (!uniqueNamespace.endsWith(StringPool.UNDERLINE)) {
 
 String modelName = (String)request.getAttribute("liferay-ui:input-permissions:modelName");
 String permissionPropagationCheckboxLabel = (String)request.getAttribute("liferay-ui:input-permissions:permissionPropagationCheckboxLabel");
+Boolean defaultValue = (Boolean)request.getAttribute("liferay-ui:input-permissions:defaultValue");
+
+boolean defaultBoolean = GetterUtil.DEFAULT_BOOLEAN;
+
+if (defaultValue != null) {
+	Boolean defaultValueBoolean = (Boolean)defaultValue;
+
+	defaultBoolean = defaultValueBoolean.booleanValue();
+
+}
 %>
 
 <c:choose>
@@ -121,7 +131,7 @@ String permissionPropagationCheckboxLabel = (String)request.getAttribute("lifera
 				</select>
 
 				<c:if test="<%= Validator.isNotNull(permissionPropagationCheckboxLabel) %>">
-					<aui:input label="<%= permissionPropagationCheckboxLabel %>" labelCssClass="font-weight-normal" name="permissionPropagationEnabled" type="checkbox" />
+					<aui:input label="<%= permissionPropagationCheckboxLabel %>" labelCssClass="font-weight-normal" name="permissionPropagationEnabled" type="checkbox" value="<%= defaultBoolean %>" />
 				</c:if>
 
 				<button aria-controls="<%= uniqueNamespace %>inputPermissionsTable" aria-expanded="<%= inputPermissionsShowOptions %>" class="btn btn-secondary btn-sm <%= inputPermissionsShowOptions ? "mb-1 mt-3" : "mb-5 mt-3" %>" id="<%= uniqueNamespace %>inputPermissionsOptionsButton" onclick="<%= uniqueNamespace %>inputPermissionsToggle();" type="button">

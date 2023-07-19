@@ -36,18 +36,19 @@ public class InputPermissionsTag extends IncludeTag {
 
 		return doTag(
 			_PAGE, formName, modelName, permissionPropagationCheckboxLabel,
-			false, pageContext);
+			false, false, pageContext);
 	}
 
 	public static String doTag(
 			String page, String formName, String modelName,
-			String permissionPropagationCheckboxLabel, boolean reverse,
+			String permissionPropagationCheckboxLabel, boolean reverse, boolean defaultValue,
 			PageContext pageContext)
 		throws Exception {
 
 		HttpServletRequest httpServletRequest =
 			(HttpServletRequest)pageContext.getRequest();
-
+		httpServletRequest.setAttribute(
+			"liferay-ui:input-permissions:defaultValue", defaultValue);
 		httpServletRequest.setAttribute(
 			"liferay-ui:input-permissions:formName", formName);
 		httpServletRequest.setAttribute(
@@ -81,7 +82,7 @@ public class InputPermissionsTag extends IncludeTag {
 		try {
 			doTag(
 				getPage(), _formName, _modelName,
-				_permissionPropagationCheckboxLabel, _reverse, pageContext);
+				_permissionPropagationCheckboxLabel, _reverse, _defaultValue, pageContext);
 
 			return EVAL_PAGE;
 		}
@@ -105,7 +106,9 @@ public class InputPermissionsTag extends IncludeTag {
 	public boolean isReverse() {
 		return _reverse;
 	}
-
+	public boolean isDefaultValue() {
+		return _defaultValue;
+	}
 	public void setFormName(String formName) {
 		_formName = formName;
 	}
@@ -113,7 +116,9 @@ public class InputPermissionsTag extends IncludeTag {
 	public void setModelName(String modelName) {
 		_modelName = modelName;
 	}
-
+	public void setDefaultValue(boolean defaultValue) {
+		_defaultValue = defaultValue;
+	}
 	public void setPermissionPropagationCheckboxLabel(
 		String permissionPropagationCheckboxLabel) {
 
@@ -137,5 +142,6 @@ public class InputPermissionsTag extends IncludeTag {
 	private String _modelName;
 	private String _permissionPropagationCheckboxLabel;
 	private boolean _reverse;
+	private boolean _defaultValue;
 
 }
