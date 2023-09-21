@@ -5,18 +5,42 @@
 
 package com.liferay.portlet.documentlibrary.util;
 
+import com.liferay.document.library.kernel.model.DLFileEntry;
 import com.liferay.document.library.kernel.model.DLFolder;
 import com.liferay.document.library.kernel.model.DLFolderConstants;
 import com.liferay.portal.kernel.exception.PortalException;
 import com.liferay.portal.kernel.model.PermissionPropagationEntry;
 import com.liferay.portal.kernel.service.PermissionPropagationEntryLocalServiceUtil;
 
+import java.util.ArrayList;
 import java.util.List;
 
 /**
  * @author To Trinh
  */
 public class DLPermissionPropagationUtil {
+
+	public static long getInheritableParentFolderId(DLFileEntry dlFileEntry)
+		throws PortalException {
+
+		long folderId = dlFileEntry.getFolderId();
+
+		long companyId = dlFileEntry.getCompanyId();
+
+		long groupId = dlFileEntry.getGroupId();
+
+		List<Long> ancestorFolderIds = new ArrayList<>();
+
+		if (folderId != DLFolderConstants.DEFAULT_PARENT_FOLDER_ID) {
+			DLFolder folder = dlFileEntry.getFolder();
+
+			ancestorFolderIds.add(folder.getFolderId());
+			ancestorFolderIds.addAll(folder.getAncestorFolderIds());
+		}
+
+		return getInheritableParentFolderId(
+			companyId, groupId, ancestorFolderIds);
+	}
 
 	public static long getInheritableParentFolderId(DLFolder dlFolder)
 		throws PortalException {
