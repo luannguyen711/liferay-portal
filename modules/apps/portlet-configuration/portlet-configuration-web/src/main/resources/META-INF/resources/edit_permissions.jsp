@@ -262,6 +262,15 @@ PortletConfigurationPermissionPropagation portletConfigurationPermissionPropagat
 								label="cancel"
 							/>
 						</div>
+
+						<div class="btn-group-item">
+							<clay:button
+								cssClass="btn-cancel"
+								displayType="secondary"
+								id='<%= liferayPortletResponse.getNamespace() + "testButton" %>'
+								label="test"
+							/>
+						</div>
 					</div>
 				</div>
 			</div>
@@ -272,6 +281,10 @@ PortletConfigurationPermissionPropagation portletConfigurationPermissionPropagat
 <aui:script>
 	var <portlet:namespace />saveButton = document.getElementById(
 		'<portlet:namespace />saveButton'
+	);
+
+	var <portlet:namespace />testButton = document.getElementById(
+	'<portlet:namespace />testButton'
 	);
 
 	var <portlet:namespace />permissionPropagationEnabledCheckbox = document.getElementById(
@@ -302,6 +315,44 @@ PortletConfigurationPermissionPropagation portletConfigurationPermissionPropagat
 				}
 			);
 		}
+	}
+
+	if (<portlet:namespace />testButton) {
+		<portlet:namespace />testButton.addEventListener('click', (event) => {
+			event.preventDefault();
+
+			Liferay.Util.openModal({
+				bodyHTML: '<liferay-ui:message key="changing-tab-without-save-helper" />',
+				buttons: [
+					{
+						autoFocus: true,
+						displayType: 'secondary',
+						label: '<liferay-ui:message key="cancel" />',
+						type: 'cancel',
+					},
+					{
+						displayType: 'secondary',
+						label: '<liferay-ui:message key="discard" />',
+						onClick: ({processClose}) => {
+							processClose();
+
+							onDelete();
+						},
+					},
+					{
+						displayType: 'warning',
+						label: '<liferay-ui:message key="save-and-continue" />',
+						onClick: ({processClose}) => {
+							processClose();
+
+							onDelete();
+						},
+					},
+				],
+				status: 'warning',
+				title: '<liferay-ui:message key="discard-changes" />'+'?',
+			});
+		});
 	}
 
 	if (<portlet:namespace />saveButton) {
