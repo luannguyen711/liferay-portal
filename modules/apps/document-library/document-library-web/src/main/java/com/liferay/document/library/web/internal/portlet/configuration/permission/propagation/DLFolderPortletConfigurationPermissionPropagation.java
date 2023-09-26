@@ -6,13 +6,21 @@
 package com.liferay.document.library.web.internal.portlet.configuration.permission.propagation;
 
 import com.liferay.document.library.constants.DLPortletKeys;
+import com.liferay.document.library.kernel.model.DLFileEntryConstants;
 import com.liferay.document.library.kernel.model.DLFolder;
 import com.liferay.document.library.kernel.model.DLFolderConstants;
 import com.liferay.document.library.kernel.service.DLFolderLocalService;
+import com.liferay.portal.kernel.model.ResourceConstants;
 import com.liferay.portal.kernel.portlet.configuration.permission.propagation.BasePortletConfigurationPermissionPropagation;
 import com.liferay.portal.kernel.portlet.configuration.permission.propagation.PortletConfigurationPermissionPropagation;
 import com.liferay.portal.kernel.service.ResourcePermissionLocalService;
+import com.liferay.portal.kernel.theme.ThemeDisplay;
+import com.liferay.portal.kernel.util.LinkedHashMapBuilder;
+import com.liferay.portal.kernel.util.WebKeys;
 import com.liferay.portlet.documentlibrary.constants.DLConstants;
+
+import java.util.HashMap;
+import java.util.Map;
 
 import javax.portlet.PortletRequest;
 
@@ -43,6 +51,35 @@ public class DLFolderPortletConfigurationPermissionPropagation
 	public String getMessage() {
 		return "set-permissions-for-documents-and-folders-uploaded-to-this-" +
 			"folder";
+	}
+
+	@Override
+	public Map<String, String> getPermissionsTabs(
+		PortletRequest portletRequest) {
+
+		if (!isAvailable(portletRequest)) {
+			return new HashMap<>();
+		}
+
+		ThemeDisplay themeDisplay = (ThemeDisplay)portletRequest.getAttribute(
+			WebKeys.THEME_DISPLAY);
+
+		int count = _resourcePermissionLocalService.getResourcePermissionsCount(
+			themeDisplay.getCompanyId(), DLFileEntryConstants.getClassName(),
+			ResourceConstants.SCOPE_INDIVIDUAL,
+			String.valueOf(_getClassPK(portletRequest)));
+
+		if (count == 0) {
+			return new HashMap<>();
+		}
+
+		return LinkedHashMapBuilder.put(
+			"folder",
+			(_getClassPK(portletRequest) == getGroupId(portletRequest)) ?
+				DLConstants.RESOURCE_NAME : DLFolderConstants.getClassName()
+		).put(
+			"document", DLFileEntryConstants.getClassName()
+		).build();
 	}
 
 	@Override
@@ -85,7 +122,8 @@ public class DLFolderPortletConfigurationPermissionPropagation
 	@Override
 	protected String[] getModelResources() {
 		return new String[] {
-			DLConstants.RESOURCE_NAME, DLFolderConstants.getClassName()
+			DLConstants.RESOURCE_NAME, DLFolderConstants.getClassName(),
+			DLFileEntryConstants.getClassName()
 		};
 	}
 
