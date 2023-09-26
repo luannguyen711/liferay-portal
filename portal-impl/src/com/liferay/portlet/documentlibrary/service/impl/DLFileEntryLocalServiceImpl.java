@@ -2791,26 +2791,13 @@ public class DLFileEntryLocalServiceImpl
 	}
 
 	private void _inheritRolesPermissions(
-			long propagationParentFolderId, DLFileEntry dlFileEntry)
+			long inheritableParentFolderId, DLFileEntry dlFileEntry)
 		throws PortalException {
-
-		Set<String> commonPermissions = new HashSet<>(
-			Arrays.asList(
-				ActionKeys.DELETE, ActionKeys.PERMISSIONS, ActionKeys.UPDATE,
-				ActionKeys.VIEW));
 
 		long companyId = dlFileEntry.getCompanyId();
 		String parentClassName = DLFolderConstants.getClassName();
 
-		Set<String> dlFolderAllActionIds = SetUtil.fromCollection(
-			ResourceActionsUtil.getModelResourceActions(
-				DLFolderConstants.getClassName()));
-
-		Set<String> dlFileEntryAllActionIds = SetUtil.fromCollection(
-			ResourceActionsUtil.getModelResourceActions(
-				DLFileEntryConstants.getClassName()));
-
-		if (propagationParentFolderId ==
+		if (inheritableParentFolderId ==
 				DLFolderConstants.DEFAULT_PARENT_FOLDER_ID) {
 
 			int count =
@@ -2828,7 +2815,7 @@ public class DLFileEntryLocalServiceImpl
 			}
 
 			parentClassName = DLConstants.RESOURCE_NAME;
-			propagationParentFolderId = dlFileEntry.getGroupId();
+			inheritableParentFolderId = dlFileEntry.getGroupId();
 		}
 
 		Map<Long, Set<String>> dlFolderRoleIdsToActionIds =
@@ -2836,8 +2823,8 @@ public class DLFileEntryLocalServiceImpl
 				getAvailableResourcePermissionActionIds(
 					companyId, parentClassName,
 					ResourceConstants.SCOPE_INDIVIDUAL,
-					String.valueOf(propagationParentFolderId),
-					dlFolderAllActionIds);
+					String.valueOf(inheritableParentFolderId),
+					ResourceActionsUtil.getModelResourceActions(DLFolderConstants.getClassName()));
 
 		Map<Long, Set<String>> dlFileEntryRoleIdsToActionIds =
 			_resourcePermissionLocalService.
@@ -2845,35 +2832,36 @@ public class DLFileEntryLocalServiceImpl
 					companyId, DLFileEntryConstants.getClassName(),
 					ResourceConstants.SCOPE_INDIVIDUAL,
 					String.valueOf(dlFileEntry.getFileEntryId()),
-					dlFileEntryAllActionIds);
+					ResourceActionsUtil.getModelResourceActions(
+						DLFileEntryConstants.getClassName()));
 
 		Set<Long> dlFolderRoleIds = dlFolderRoleIdsToActionIds.keySet();
 
 		for (Long dlFolderRoleId : dlFolderRoleIds) {
-			Set<String> dlFolderActionIds = dlFolderRoleIdsToActionIds.get(
-				dlFolderRoleId);
+			Set<String> dlFolderRoleIdToActionIds =
+				dlFolderRoleIdsToActionIds.get(dlFolderRoleId);
 
-			dlFolderActionIds.retainAll(commonPermissions);
+			dlFolderRoleIdToActionIds.retainAll(_commonPermissions);
 
-			Set<String> dlFileEntryActionIds = new HashSet<>(dlFolderActionIds);
+			Set<String> dlFileEntryActionIds = new HashSet<>(
+				dlFolderRoleIdToActionIds);
 
-			if (dlFileEntryRoleIdsToActionIds.containsKey(dlFolderRoleId)) {
-				Set<String> dlFileEntryRoleIdToActionIds =
-					dlFileEntryRoleIdsToActionIds.get(dlFolderRoleId);
+			Set<String> dlFileEntryRoleIdToActionIds =
+				dlFileEntryRoleIdsToActionIds.get(dlFolderRoleId);
 
-				for (String actionId : dlFileEntryRoleIdToActionIds) {
-					if (!commonPermissions.contains(actionId)) {
-						dlFileEntryActionIds.add(actionId);
-					}
-				}
+			if (dlFileEntryRoleIdToActionIds != null) {
+				dlFileEntryRoleIdToActionIds.removeAll(_commonPermissions);
+
+				dlFileEntryActionIds.addAll(dlFileEntryRoleIdToActionIds);
 			}
 
 			_resourcePermissionLocalService.setResourcePermissions(
 				companyId, DLFileEntryConstants.getClassName(),
 				ResourceConstants.SCOPE_INDIVIDUAL,
-				String.valueOf(dlFileEntry.getPrimaryKey()), dlFolderRoleId,
+				String.valueOf(dlFileEntry.getFileEntryId()), dlFolderRoleId,
 				dlFileEntryActionIds.toArray(new String[0]));
 		}
+
 	}
 
 	private boolean _isValidFileVersionNumber(String version) {
@@ -3744,6 +3732,10 @@ public class DLFileEntryLocalServiceImpl
 	private static final Log _log = LogFactoryUtil.getLog(
 		DLFileEntryLocalServiceImpl.class);
 
+	private static final Set<String> _commonPermissions = new HashSet<>(
+		Arrays.asList(
+			ActionKeys.DELETE, ActionKeys.PERMISSIONS, ActionKeys.UPDATE,
+			ActionKeys.VIEW));
 	private static final Pattern _fileVersionPattern = Pattern.compile(
 		"\\d+\\.\\d+");
 	private static volatile TrashHelper _trashHelper =

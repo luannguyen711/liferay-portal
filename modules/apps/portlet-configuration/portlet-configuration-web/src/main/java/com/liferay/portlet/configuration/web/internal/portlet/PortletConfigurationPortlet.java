@@ -655,7 +655,7 @@ public class PortletConfigurationPortlet extends MVCPortlet {
 			String mvcPath = renderRequest.getParameter("mvcPath");
 
 			if (mvcPath.equals("/edit_permissions.jsp")) {
-				_checkEditPermissionsJSP(renderRequest);
+//				_checkEditPermissionsJSP(renderRequest);
 
 				renderRequest.setAttribute(
 					RolesAdminWebKeys.ROLE_TYPE_CONTRIBUTOR_PROVIDER,
