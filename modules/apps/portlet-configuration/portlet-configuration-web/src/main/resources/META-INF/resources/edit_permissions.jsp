@@ -312,9 +312,11 @@ PortletConfigurationPermissionPropagation portletConfigurationPermissionPropagat
 						event.target.checked
 					) {
 						alertMessage.classList.remove('hide');
+						localStorage.setItem('alertMessage', alertMessage);
 					}
 					else {
 						alertMessage.classList.add('hide');
+						localStorage.setItem('alertMessage', alertMessage);
 					}
 				}
 			);
@@ -358,6 +360,28 @@ PortletConfigurationPermissionPropagation portletConfigurationPermissionPropagat
 			});
 		});
 	}
+
+	var folderPermissionTab = document.querySelector('[data-nav-item-index="0"] a');
+	var documentPermissionTab = document.querySelector('[data-nav-item-index="1"] a');
+
+	if (folderPermissionTab.classList.contains('active')){
+		console.log('folderPermissionTab');
+		var alertMessage = localStorage.getItem('alertMessage');
+		console.log(JSON.stringify(alertMessage));
+		if (!alertMessage.classList.contains('hide')){
+			console.log('Modified folder');
+		}
+	}
+
+	if (documentPermissionTab.classList.contains('active')){
+		console.log('documentPermissionTab');
+		var alertMessage = localStorage.getItem('alertMessage');
+		console.log(JSON.stringify(alertMessage));
+		if (!alertMessage.classList.contains('hide')){
+			console.log('Modified document');
+		}
+	}
+
 
 	if (<portlet:namespace />saveButton) {
 		<portlet:namespace />saveButton.addEventListener('click', (event) => {

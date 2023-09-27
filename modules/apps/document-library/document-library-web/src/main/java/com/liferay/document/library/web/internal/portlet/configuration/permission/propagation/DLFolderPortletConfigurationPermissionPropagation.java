@@ -70,7 +70,7 @@ public class DLFolderPortletConfigurationPermissionPropagation
 			String.valueOf(_getClassPK(portletRequest)));
 
 		if (count == 0) {
-			return new HashMap<>();
+			//return new HashMap<>();
 		}
 
 		return LinkedHashMapBuilder.put(

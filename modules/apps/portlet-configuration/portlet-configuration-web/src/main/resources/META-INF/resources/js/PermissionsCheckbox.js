@@ -53,6 +53,7 @@ export default function PermissionsCheckbox({
 						permissionPropagationEnabledCheckbox.checked
 					) {
 						alertMessage.classList.remove('hide');
+						localStorage.setItem('alertMessage', alertMessage.innerHTML);
 					}
 				}
 			}}
