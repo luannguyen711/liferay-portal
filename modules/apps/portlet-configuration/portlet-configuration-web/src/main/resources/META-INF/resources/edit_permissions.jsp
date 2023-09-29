@@ -30,9 +30,16 @@ PortletConfigurationPermissionPropagation portletConfigurationPermissionPropagat
 
 <div class="cadmin edit-permissions portlet-configuration-edit-permissions">
 	<div class="portlet-configuration-body-content">
-		<clay:navigation-bar
-			navigationItems="<%= portletConfigurationPermissionsDisplayContext.getNavigationItems() %>"
-		/>
+		<div>
+			<react:component
+				module="js/PermissionNavigationBar"
+				props='<%=
+					HashMapBuilder.<String, Object>put(
+						"navigationItems", portletConfigurationPermissionsDisplayContext.getNavigationItems()
+					).build()
+				%>'
+			/>
+		</div>
 
 		<clay:management-toolbar
 			clearResultsURL="<%= portletConfigurationPermissionsDisplayContext.getClearResultsURL() %>"
