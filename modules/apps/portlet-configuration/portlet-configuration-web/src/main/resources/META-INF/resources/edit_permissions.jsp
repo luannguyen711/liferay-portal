@@ -30,9 +30,16 @@ PortletConfigurationPermissionPropagation portletConfigurationPermissionPropagat
 
 <div class="cadmin edit-permissions portlet-configuration-edit-permissions">
 	<div class="portlet-configuration-body-content">
-		<clay:navigation-bar
-			navigationItems="<%= portletConfigurationPermissionsDisplayContext.getNavigationItems() %>"
-		/>
+		<div>
+			<react:component
+				module="js/TabComponent"
+				props='<%=
+					HashMapBuilder.<String, Object>put(
+						"navigationItems", portletConfigurationPermissionsDisplayContext.getNavigationItems()
+					).build()
+				%>'
+			/>
+		</div>
 
 		<clay:management-toolbar
 			clearResultsURL="<%= portletConfigurationPermissionsDisplayContext.getClearResultsURL() %>"
@@ -266,6 +273,15 @@ PortletConfigurationPermissionPropagation portletConfigurationPermissionPropagat
 								label="cancel"
 							/>
 						</div>
+
+						<div class="btn-group-item">
+							<clay:button
+								cssClass="btn-cancel"
+								displayType="secondary"
+								id='<%= liferayPortletResponse.getNamespace() + "testButton" %>'
+								label="test"
+							/>
+						</div>
 					</div>
 				</div>
 			</div>
@@ -277,7 +293,9 @@ PortletConfigurationPermissionPropagation portletConfigurationPermissionPropagat
 	var <portlet:namespace />saveButton = document.getElementById(
 		'<portlet:namespace />saveButton'
 	);
-
+	var <portlet:namespace />testButton = document.getElementById(
+		'<portlet:namespace />testButton'
+	);
 	var <portlet:namespace />permissionPropagationEnabledCheckbox = document.getElementById(
 		'<portlet:namespace />permissionPropagationEnabled'
 	);
@@ -321,6 +339,43 @@ PortletConfigurationPermissionPropagation portletConfigurationPermissionPropagat
 					submitForm(form);
 				}
 			}
+		});
+	}
+	if (<portlet:namespace />testButton) {
+		<portlet:namespace />testButton.addEventListener('click', (event) => {
+			event.preventDefault();
+
+			Liferay.Util.openModal({
+				bodyHTML: '<liferay-ui:message key="changing-tab-without-save-helper" />',
+				buttons: [
+					{
+						autoFocus: true,
+						displayType: 'secondary',
+						label: '<liferay-ui:message key="cancel" />',
+						type: 'cancel',
+					},
+					{
+						displayType: 'secondary',
+						label: '<liferay-ui:message key="discard" />',
+						onClick: ({processClose}) => {
+							processClose();
+
+							onDelete();
+						},
+					},
+					{
+						displayType: 'warning',
+						label: '<liferay-ui:message key="save-and-continue" />',
+						onClick: ({processClose}) => {
+							processClose();
+
+							onDelete();
+						},
+					},
+				],
+				status: 'warning',
+				title: '<liferay-ui:message key="discard-changes" />'+'?',
+			});
 		});
 	}
 </aui:script>
