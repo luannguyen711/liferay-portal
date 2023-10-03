@@ -22,9 +22,75 @@ export default function PermissionsCheckbox({
 	const [indeterminate, setIndeterminate] = useState(
 		Boolean(initialIndeterminate)
 	);
+	const count = document.getElementById(_portletNamespace + 'count');
+	const saveButton = document.getElementById(
+		_portletNamespace + 'saveButton'
+	);
+	const eventCount = document.getElementById(
+		_portletNamespace + 'eventCount'
+	);
+
 	const [value, setValue] = useState(
 		initialIndeterminate ? 'indeterminate' : ''
 	);
+
+	const propagationNavigationBar = document.getElementById(
+		_portletNamespace + 'propagationNavigationBar'
+	);
+
+	const navLinks = propagationNavigationBar.getElementsByClassName(
+		'nav-link'
+	);
+
+	for (let i = 0; i < navLinks.length; i++) {
+		const navLink = navLinks.item(i);
+		const _listener = function (event) {
+			openPopUp(event, navLink.href);
+		};
+
+		if (Number(count.value) !== 0 && Number(eventCount.value) == 81) {
+			navLink.addEventListener('click', (navLink.fn = _listener), false);
+		}
+
+		if (Number(count.value) == 0) {
+			navLink.removeEventListener('click', navLink.fn, false);
+		}
+	}
+
+	eventCount.value = Number(eventCount.value) + 1;
+
+	function openPopUp(event, href) {
+		event.preventDefault(); // this line prevents changing to the URL of the link href
+
+		Liferay.Util.openModal({
+			bodyHTML: Liferay.Language.get('changing-tab-without-save-helper'),
+			buttons: [
+				{
+					autoFocus: true,
+					displayType: 'secondary',
+					label: Liferay.Language.get('cancel'),
+					type: 'cancel',
+				},
+				{
+					displayType: 'secondary',
+					label: Liferay.Language.get('discard'),
+					onClick: () => {
+						window.location.href = href;
+					},
+				},
+				{
+					displayType: 'warning',
+					label: Liferay.Language.get('save-and-continue'),
+					onClick: () => {
+						saveButton.dispatchEvent(new Event('click'));
+						window.location.href = href;
+					},
+				},
+			],
+			status: 'warning',
+			title: Liferay.Language.get('discard-changes') + '?',
+		});
+	}
 
 	return (
 		<ClayCheckbox
@@ -33,6 +99,13 @@ export default function PermissionsCheckbox({
 			inline
 			onChange={() => {
 				setChecked((prevCheckedState) => !prevCheckedState);
+
+				if (checked == initialChecked) {
+					count.value = Number(count.value) - 1;
+				}
+				else {
+					count.value = Number(count.value) + 1;
+				}
 
 				if (indeterminate) {
 					setIndeterminate(false);

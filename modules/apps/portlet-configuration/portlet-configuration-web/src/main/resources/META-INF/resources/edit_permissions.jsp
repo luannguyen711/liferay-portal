@@ -30,14 +30,9 @@ PortletConfigurationPermissionPropagation portletConfigurationPermissionPropagat
 
 <div class="cadmin edit-permissions portlet-configuration-edit-permissions">
 	<div class="portlet-configuration-body-content">
-		<div>
-			<react:component
-				module="js/PermissionNavigationBar"
-				props='<%=
-					HashMapBuilder.<String, Object>put(
-						"navigationItems", portletConfigurationPermissionsDisplayContext.getNavigationItems()
-					).build()
-				%>'
+		<div id='<%= liferayPortletResponse.getNamespace() + "propagationNavigationBar" %>'>
+			<clay:navigation-bar
+				navigationItems="<%= portletConfigurationPermissionsDisplayContext.getNavigationItems() %>"
 			/>
 		</div>
 
@@ -68,8 +63,16 @@ PortletConfigurationPermissionPropagation portletConfigurationPermissionPropagat
 				/>
 			</clay:alert>
 		</c:if>
-
 		<aui:form action="<%= portletConfigurationPermissionsDisplayContext.getUpdateRolePermissionsURL() %>" cssClass="container-fluid container-fluid-max-xl" method="post" name="fm">
+
+			<aui:input name="count">
+
+			</aui:input>
+
+			<aui:input name="eventCount">
+
+			</aui:input>
+
 			<liferay-ui:search-container
 				searchContainer="<%= roleSearchContainer %>"
 			>
